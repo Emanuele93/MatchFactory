@@ -2,11 +2,12 @@ using UnityEngine;
 using DG.Tweening;
 using Services;
 using System;
+using Cysharp.Threading.Tasks;
 using TMPro;
 
 namespace Home
 {
-    public class HomePageController : MonoBehaviour
+    public class HomePageController : MonoBehaviour, ISceneController
     {
         [SerializeField] private RectTransform header;
         [SerializeField] private RectTransform playButton;
@@ -54,25 +55,28 @@ namespace Home
             currentLevel.text = SavesManager.CurrentLevel.ToString();
         }
 
-        private void Start()
-        {
-            // Open Animation
-            header.DOMove(_headerPosition, openDuration);
-            playButton.DOMove(_playButtonPosition, openDuration);
-            levelImage.DOScale(Vector3.one, openDuration);
-        }
 
         private void Update()
         {
             SetLivesValues();
         }
 
-        private void OnDisable()
+        UniTask ISceneController.Open()
+        {
+            // Open Animation
+            var moveHeader = header.DOMove(_headerPosition, openDuration).ToUniTask();
+            var movePlayButton = playButton.DOMove(_playButtonPosition, openDuration).ToUniTask();
+            var scaleLevelImage = levelImage.DOScale(Vector3.one, openDuration).ToUniTask();
+            return UniTask.WhenAll(moveHeader, movePlayButton, scaleLevelImage);
+        }
+
+        UniTask ISceneController.Close()
         {
             // Close Animation
-            header.DOMove(header.position + Vector3.up * header.position.y * 2, openDuration);
-            playButton.DOMove(playButton.position + Vector3.down * playButton.position.y * 2, openDuration);
-            levelImage.DOScale(Vector3.zero, openDuration);
+            var moveHeader = header.DOMove(header.position + Vector3.up * header.position.y * 2, openDuration).ToUniTask();
+            var movePlayButton = playButton.DOMove(playButton.position + Vector3.down * playButton.position.y * 2, openDuration).ToUniTask();
+            var scaleLevelImage = levelImage.DOScale(Vector3.zero, openDuration).ToUniTask();
+            return UniTask.WhenAll(moveHeader, movePlayButton, scaleLevelImage);
         }
     }
 }

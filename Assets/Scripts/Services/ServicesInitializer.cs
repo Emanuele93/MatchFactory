@@ -19,7 +19,7 @@ namespace Services
                 service.Init();
             
             SoundsManager.PlayMusic();
-            SceneManager.LoadScene((int)Scenes.HomePage, LoadSceneMode.Additive);
+            NavigationManager.Open(Scenes.HomePage);
         }
     }
 }
