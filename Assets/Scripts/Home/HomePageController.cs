@@ -3,7 +3,6 @@ using UnityEngine;
 using DG.Tweening;
 using Services;
 using System;
-using Common;
 using TMPro;
 
 namespace Home
@@ -23,11 +22,6 @@ namespace Home
         [SerializeField] private TextMeshProUGUI coins;
         [SerializeField] private TextMeshProUGUI currentLevel;
 
-        [Header("Settings")] 
-        [SerializeField] private RectTransform settingsPopup;
-        [SerializeField] private OnOffButton settingsMusicButton;
-        [SerializeField] private OnOffButton settingsSoundsButton;
-        
         private Vector3 _headerPosition;
         private Vector3 _playButtonPosition;
 
@@ -48,29 +42,21 @@ namespace Home
         
         private void OnEnable()
         {
-            // SetUp Initial Position and values
+            // SetUp Initial Position 
             _headerPosition = header.position;
             header.position += Vector3.up * header.rect.height * 2;
             _playButtonPosition = playButton.position;
             playButton.position += Vector3.down * playButton.rect.height * 2;
             levelImage.localScale = Vector3.zero;
+            
+            // SetUp values
             SetLivesValues();
             coins.text = SavesManager.Coins.ToString();
             currentLevel.text = SavesManager.CurrentLevel.ToString();
-            
-            // SetUp Settings Popup
-            settingsPopup.localScale = Vector3.zero;
-            settingsPopup.gameObject.SetActive(true);
-            settingsMusicButton.SetState(SavesManager.IsMusicActive);
-            settingsMusicButton.OnStateChange += value => SavesManager.IsMusicActive = value;
-            settingsSoundsButton.SetState(SavesManager.IsSoundEffectsActive);
-            settingsSoundsButton.OnStateChange += value => SavesManager.IsSoundEffectsActive = value;
         }
 
-        public void OpenSettingsPopup () => settingsPopup.DOScale(Vector3.one, openDuration);
-        public void CloseSettingsPopup () => settingsPopup.DOScale(Vector3.zero, closeDuration);
-        public void PlayMatch () => NavigationManager.Open(Scenes.GamePage);
-        public void CloseApp () => Application.Quit();
+        public void OpenSettings () => NavigationManager.Open(Scenes.Settings);
+        public void PlayMatch () => NavigationManager.Open(Scenes.GamePreview);
         
         private void Update()
         {

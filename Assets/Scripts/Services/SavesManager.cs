@@ -62,7 +62,7 @@ namespace Services
                 if (_savesData.recoverLiveStart == null)
                     return (_savesData.lives, 0);
 
-                var recoverLiveStart = DateTime.Parse(_savesData.recoverLiveStart);
+                var recoverLiveStart = DateTime.Parse(_savesData.recoverLiveStart, CultureInfo.InvariantCulture);
                 var timeSpan = (DateTime.UtcNow - recoverLiveStart).Seconds;
                 var recoveredLives =
                     Convert.ToInt32(Math.Floor((double)timeSpan / _config.RecoverLiveSecondsDuration));
@@ -80,6 +80,13 @@ namespace Services
                 
                 return (_savesData.lives, _savesData.lives < _config.MaxLives ? timeSpan - consumedSeconds : 0);
             }
+        }
+
+        public static void LoseLive()
+        {
+            _savesData.lives--;
+            _savesData.recoverLiveStart ??= DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+            Save();
         }
         
         private static void Save()

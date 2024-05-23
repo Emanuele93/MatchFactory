@@ -12,6 +12,18 @@ EditorBuildSettings:
     path: Assets/Scenes/HomePage.unity
     guid: 87f0a6a1fac608147a35affdad47557b
   - enabled: 1
+    path: Assets/Scenes/Settings.unity
+    guid: 5ccab8b0f7c063c49bbf2c39c85a1381
+  - enabled: 1
+    path: Assets/Scenes/GamePreview.unity
+    guid: fc21af13e2d08b44b8555f321d22e49d
+  - enabled: 1
     path: Assets/Scenes/GamePage.unity
     guid: a88d0277032bc0c4e93e77f0fdfc7f5a
+  - enabled: 1
+    path: Assets/Scenes/GamePause.unity
+    guid: c006ab1061f2b61488b2add0876f7d5d
+  - enabled: 1
+    path: Assets/Scenes/GameGiveUp.unity
+    guid: c1c8c23329f514b46a4da0bdd9c8c5bc
   m_configObjects: {}

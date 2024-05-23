@@ -142,6 +142,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1514768585164707440, guid: 8224723df64d3a241981d86ff7566970, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1514768585164707440, guid: 8224723df64d3a241981d86ff7566970, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 447740951, guid: 6d1a2570067e3ae4cb5c72a2bca3b8d5, type: 3}
     - target: {fileID: 1821084376386705478, guid: 8224723df64d3a241981d86ff7566970, type: 3}
       propertyPath: m_Name
       value: ButtonWithText

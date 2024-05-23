@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 
@@ -6,7 +7,11 @@ namespace Services
     public enum Scenes
     {
         HomePage = 1,
-        GamePage = 2
+        Settings = 2,
+        GamePreview = 3,
+        GamePage = 4,
+        GamePause = 5,
+        GameGiveUp = 6
     }
 
     public interface ISceneController
@@ -23,7 +28,10 @@ namespace Services
             public ISceneController Controller;
         }
 
+        private static readonly Scenes[] Popups = { Scenes.Settings, Scenes.GamePreview, Scenes.GamePause, Scenes.GameGiveUp };
+
         private static SceneController? _currentSceneController;
+        private static SceneController? _currentPopupController;
         private static bool _isOpening;
         
         internal override void Init()
@@ -38,26 +46,58 @@ namespace Services
                 return;
             
             _isOpening = true;
-            var closeTask = _currentSceneController?.Controller.Close();
-            await SceneManager.LoadSceneAsync((int)scene, LoadSceneMode.Additive);
+
+            var isPopup = Popups.Contains(scene);
+            
+            var closePopupTask = _currentPopupController?.Controller.Close() ?? UniTask.CompletedTask;
+            var loadNewSceneTask = SceneManager.LoadSceneAsync((int)scene, LoadSceneMode.Additive);
+            
+            await closePopupTask;
+            var unloadPopupSceneTask = UniTask.CompletedTask;
+            var popupScene = _currentPopupController?.Scene;
+            if (popupScene != null)
+            {
+                unloadPopupSceneTask = SceneManager.UnloadSceneAsync((Scene)popupScene).ToUniTask();
+                _currentPopupController = null;
+            }
+            
+            var closePageTask = (isPopup ? null : _currentSceneController?.Controller.Close()) ?? UniTask.CompletedTask;
+            await loadNewSceneTask;
 
             var newScene = SceneManager.GetSceneByName(scene.ToString());
             var newSceneController = newScene.GetRootGameObjects()[0].GetComponent<ISceneController>();
-            var openTask = newSceneController.Open();
             
-            if (closeTask != null)
-                await (UniTask)closeTask;
-
-            UniTask? unloadSceneTask = null;
+            await closePageTask;
+            var unloadPageSceneTask = UniTask.CompletedTask;
             var oldScene = _currentSceneController?.Scene;
-            if (oldScene != null)
-                unloadSceneTask = SceneManager.UnloadSceneAsync((Scene)oldScene).ToUniTask();
+            if (!isPopup && oldScene != null)
+                unloadPageSceneTask = SceneManager.UnloadSceneAsync((Scene)oldScene).ToUniTask();
 
-            _currentSceneController = new SceneController { Scene = newScene, Controller = newSceneController };
-            await openTask;
+            await newSceneController.Open();
+            if(isPopup)
+                _currentPopupController = new SceneController { Scene = newScene, Controller = newSceneController };
+            else
+                _currentSceneController = new SceneController { Scene = newScene, Controller = newSceneController };
             
-            if (unloadSceneTask != null)
-                await (UniTask)unloadSceneTask;
+            await UniTask.WhenAll(unloadPageSceneTask, unloadPopupSceneTask);
+            
+            _isOpening = false;
+        }
+
+        public static async void ClosePopup()
+        {
+            var controller = _currentPopupController?.Controller;
+            if (_isOpening || controller == null)
+                return;
+
+            _isOpening = true;
+            
+            await controller.Close();
+            var oldScene = _currentPopupController?.Scene;
+            if (oldScene != null)
+                await SceneManager.UnloadSceneAsync((Scene)oldScene);
+            _currentPopupController = null;
+            
             _isOpening = false;
         }
     }
