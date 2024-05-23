@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 namespace Services
@@ -18,6 +19,7 @@ namespace Services
                 service.Init();
             
             SoundsManager.PlayMusic();
+            SceneManager.LoadScene((int)Scenes.HomePage, LoadSceneMode.Additive);
         }
     }
 }

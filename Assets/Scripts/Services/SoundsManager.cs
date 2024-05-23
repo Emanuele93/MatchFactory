@@ -1,3 +1,4 @@
+using Configs;
 using UnityEngine;
 
 namespace Services

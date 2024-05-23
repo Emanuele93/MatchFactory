@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 using System;
 
-namespace Services
+namespace Configs
 {
     [Serializable] public enum SoundEffect
     {

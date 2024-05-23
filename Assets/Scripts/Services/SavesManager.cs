@@ -2,6 +2,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Globalization;
+using Configs;
 
 namespace Services
 {
@@ -14,9 +16,17 @@ namespace Services
 
             public int currentLevel;
             public int starsCollected;
+
+            public int coins;
+            public int lives;
+            public string recoverLiveStart;
         }
 
+        [SerializeField] private GameConfig config;
+        
+        private static GameConfig _config;
         private static SavesData _savesData;
+        private static string Path => Application.persistentDataPath + "MatchFactory.saves";
 
         public static Action<bool> OnMusicActiveChange;
         public static bool IsMusicActive
@@ -38,8 +48,39 @@ namespace Services
             _savesData.starsCollected += newStarsCollected;
             Save();
         }
-        
-        private static string Path => Application.persistentDataPath + "MatchFactory.saves";
+
+        public static int Coins
+        {
+            get => _savesData.coins;
+            set { _savesData.coins = value; Save(); }
+        }
+
+        public static (int, int) Lives
+        {
+            get
+            {
+                if (_savesData.recoverLiveStart == null)
+                    return (_savesData.lives, 0);
+
+                var recoverLiveStart = DateTime.Parse(_savesData.recoverLiveStart);
+                var timeSpan = (DateTime.UtcNow - recoverLiveStart).Seconds;
+                var recoveredLives =
+                    Convert.ToInt32(Math.Floor((double)timeSpan / _config.RecoverLiveSecondsDuration));
+
+                if (recoveredLives == 0)
+                    return (_savesData.lives, _config.RecoverLiveSecondsDuration - timeSpan);
+
+                var consumedSeconds = recoveredLives * _config.RecoverLiveSecondsDuration;
+                _savesData.lives = Math.Min(_config.MaxLives, _savesData.lives + recoveredLives);
+                _savesData.recoverLiveStart = _savesData.lives < _config.MaxLives
+                    ? recoverLiveStart.AddSeconds(consumedSeconds).ToString(CultureInfo.InvariantCulture)
+                    : null;
+                
+                Save();
+                
+                return (_savesData.lives, _savesData.lives < _config.MaxLives ? timeSpan - consumedSeconds : 0);
+            }
+        }
         
         private static void Save()
         {
@@ -53,7 +94,11 @@ namespace Services
         {
             if (!File.Exists(Path))
             {
-                _savesData = new SavesData();
+                _savesData = new SavesData
+                {
+                    coins = _config.StartingCoins,
+                    lives = _config.MaxLives
+                };
                 return;
             }
             
@@ -65,6 +110,7 @@ namespace Services
 
         internal override void Init()
         {
+            _config = config;
             Load();
         }
     }
