@@ -63,12 +63,11 @@ namespace Services
                     return (_savesData.lives, 0);
 
                 var recoverLiveStart = DateTime.Parse(_savesData.recoverLiveStart, CultureInfo.InvariantCulture);
-                var timeSpan = (DateTime.UtcNow - recoverLiveStart).Seconds;
-                var recoveredLives =
-                    Convert.ToInt32(Math.Floor((double)timeSpan / _config.RecoverLiveSecondsDuration));
+                var timeSpan = (DateTime.UtcNow - recoverLiveStart).TotalSeconds;
+                var recoveredLives = Convert.ToInt32(Math.Floor(timeSpan / _config.RecoverLiveSecondsDuration));
 
                 if (recoveredLives == 0)
-                    return (_savesData.lives, _config.RecoverLiveSecondsDuration - timeSpan);
+                    return ((int, int))(_savesData.lives, _config.RecoverLiveSecondsDuration - timeSpan);
 
                 var consumedSeconds = recoveredLives * _config.RecoverLiveSecondsDuration;
                 _savesData.lives = Math.Min(_config.MaxLives, _savesData.lives + recoveredLives);
@@ -78,7 +77,7 @@ namespace Services
                 
                 Save();
                 
-                return (_savesData.lives, _savesData.lives < _config.MaxLives ? timeSpan - consumedSeconds : 0);
+                return ((int, int))(_savesData.lives, _savesData.lives < _config.MaxLives ? timeSpan - consumedSeconds : 0);
             }
         }
 

@@ -11,7 +11,7 @@ namespace Home
         
         private void OnEnable()
         {
-            title.text = SavesManager.CurrentLevel.ToString();
+            title.text = $"Level {SavesManager.CurrentLevel + 1}";
         }
 
         public void PlayMatch() => NavigationManager.Open(Scenes.GamePage);

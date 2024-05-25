@@ -37,7 +37,7 @@ namespace Home
             var minutes = Convert.ToInt32(Math.Floor(lTimer / 60f));
             var seconds = lTimer - minutes * 60;
             livesCount.text = lCount.ToString();
-            livesTimer.text = $"{minutes}:{seconds}";
+            livesTimer.text = $"{minutes:00}:{seconds:00}";
         }
         
         private void OnEnable()
@@ -52,7 +52,7 @@ namespace Home
             // SetUp values
             SetLivesValues();
             coins.text = SavesManager.Coins.ToString();
-            currentLevel.text = SavesManager.CurrentLevel.ToString();
+            currentLevel.text = (SavesManager.CurrentLevel + 1).ToString();
         }
 
         public void OpenSettings () => NavigationManager.Open(Scenes.Settings);
