@@ -26,4 +26,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameGiveUp.unity
     guid: c1c8c23329f514b46a4da0bdd9c8c5bc
+  - enabled: 1
+    path: Assets/Scenes/GameWinPopup.unity
+    guid: 6c41db4ee24669a4bb18295e1639a4dc
+  - enabled: 1
+    path: Assets/Scenes/GameLosePopup.unity
+    guid: 79010c79722cca34f96c7b78c7e2b57f
   m_configObjects: {}

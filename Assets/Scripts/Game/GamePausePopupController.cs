@@ -6,10 +6,10 @@ namespace Game
 {
     public class GamePausePopupController : MonoBehaviour
     {
-        [Header("GamePause")] 
+        [Header("GamePause")]
         [SerializeField] private OnOffButton musicButton;
         [SerializeField] private OnOffButton soundsButton;
-        
+
         private void OnEnable()
         {
             musicButton.SetState(SavesManager.IsMusicActive);
@@ -28,5 +28,10 @@ namespace Game
         private static void SetSoundEffectsActive(bool value) => SavesManager.IsSoundEffectsActive = value;
 
         public void GiveUpGame() => NavigationManager.Open(Scenes.GameGiveUp);
+        public void Coninue()
+        {
+            SavesManager.ContineMatch();
+            NavigationManager.ClosePopup();
+        }
     }
 }

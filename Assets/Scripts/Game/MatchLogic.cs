@@ -68,5 +68,10 @@ namespace Game
             _picked.RemoveRange(index, mergeableItems);
             return (mergedItems, _picked.ToArray());
         }
+
+        internal void OnMatchContinue(TimeSpan timeSpan)
+        {
+            _timerEnd = _timerEnd.Add(timeSpan);
+        }
     }
 }

@@ -5,14 +5,16 @@ namespace Game
 {
     public class GameGiveUpPopupController : MonoBehaviour
     {
-        private void OnEnable()
-        {
-        }
-
         public void GiveUpGame()
         {
-            SavesManager.LoseLive();
-            NavigationManager.Open(Scenes.HomePage);
+            SavesManager.SetMatchResult(false);
+            NavigationManager.Open(Scenes.GameLosePopup);
+        }
+
+        public void Coninue()
+        {
+            SavesManager.ContineMatch();
+            NavigationManager.ClosePopup();
         }
     }
 }

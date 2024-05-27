@@ -1,16 +1,19 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 using System.Linq;
 using UnityEngine;
 using Services;
 using Common;
 using TMPro;
 
-namespace Home
+namespace Game
 {
-    public class GamePreviewPopupController : MonoBehaviour
+    public class GameLosePopupController : MonoBehaviour
     {
-        [Header("GamePreview")]
-        [SerializeField] private TextMeshProUGUI title;
+        [Header("GameLose")]
+        [SerializeField] private RectTransform popup;
+        [SerializeField] private Button retryButton;
+        [SerializeField] private TextMeshProUGUI message;
         [SerializeField] private TextMeshProUGUI missileQty;
         [SerializeField] private ActiveButton missileButton;
         [SerializeField] private TextMeshProUGUI hourglassQty;
@@ -20,8 +23,6 @@ namespace Home
 
         private void OnEnable()
         {
-            title.text = $"Level {SavesManager.CurrentLevel + 1}";
-
             var powerUps = SavesManager.PowerUps;
             missileQty.text = (powerUps.ContainsKey(PowerUps.Missile) ? powerUps[PowerUps.Missile] : 0).ToString();
             hourglassQty.text = (powerUps.ContainsKey(PowerUps.Hourglass) ? powerUps[PowerUps.Hourglass] : 0).ToString();
@@ -45,16 +46,31 @@ namespace Home
                 else
                     RemoveInitialPowerUps(PowerUps.Missile);
             };
+
+            var (lives, _) = SavesManager.Lives;
+            if (lives <= 0)
+            {
+                retryButton.gameObject.SetActive(false);
+                popup.sizeDelta = new Vector2(popup.sizeDelta.x, popup.sizeDelta.y - 200);
+                message.text = "You lost the match";
+                missileButton.gameObject.SetActive(false);
+                hourglassButton.gameObject.SetActive(false);
+            }
         }
 
         public void AddInitialPowerUps(PowerUps powerUps) => _initialPowerUps.Add(powerUps);
 
         public void RemoveInitialPowerUps(PowerUps powerUps) => _initialPowerUps.Remove(powerUps);
 
-        public void PlayMatch()
+        public void RestartMatch()
         {
-            SavesManager.StartNewMatch(_initialPowerUps.ToArray());
-            NavigationManager.Open(Scenes.GamePage);
+            SavesManager.RestartMatch(_initialPowerUps.ToArray());
+            NavigationManager.ClosePopup();
+        }
+
+        public void Exit()
+        {
+            NavigationManager.Open(Scenes.HomePage);
         }
     }
 }

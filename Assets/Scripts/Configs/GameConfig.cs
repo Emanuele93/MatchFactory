@@ -8,11 +8,13 @@ namespace Configs
         [SerializeField] private int startingCoins;
         [SerializeField] private int maxLives;
         [SerializeField] private int recoverLiveSecondsDuration;
+        [SerializeField] private int matchWinCoinsReward;
         [SerializeField] private LevelConfig[] levels;
 
         public int StartingCoins => startingCoins;
         public int MaxLives => maxLives;
         public int RecoverLiveSecondsDuration => recoverLiveSecondsDuration;
+        public int MatchWinCoinsReward => matchWinCoinsReward;
         public LevelConfig[] Levels => levels;
     }
 }

@@ -33,10 +33,14 @@ namespace Game
 
         private Dictionary<string, GameGoalImage> _goalImages;
 
-        internal void Setup(Dictionary<string, GameGoalImage> goalImages, TimeSpan time)
+        internal void Init(Dictionary<string, GameGoalImage> goalImages, TimeSpan time)
         {
             _goalImages = goalImages;
+            timerText.text = $"{time.Minutes:00}:{time.Seconds:00}";
+        }
 
+        internal void Setup()
+        {
             board.SetActive(false);
             _topUIPosition = topUI.position;
             topUI.position += Vector3.up * topUI.rect.height;
@@ -44,8 +48,6 @@ namespace Game
             bottomUI.position += Vector3.down * topUI.rect.height;
             _pickedItemsPosition = pickedItemContainer.position;
             pickedItemContainer.position += Vector3.up;
-
-            timerText.text = $"{time.Minutes:00}:{time.Seconds:00}";
         }
 
         internal UniTask Open()

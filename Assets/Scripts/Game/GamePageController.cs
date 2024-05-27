@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Services;
 using Configs;
+using System;
 
 namespace Game
 {
@@ -21,6 +22,26 @@ namespace Game
 
         private void OnEnable()
         {
+            SavesManager.OnMatchRestart += StartMatch;
+            SavesManager.OnMatchContinue += OnMatchContinue;
+            StartMatch();
+            animator.Setup();
+        }
+
+        void OnDisable()
+        {
+            SavesManager.OnMatchRestart -= StartMatch;
+            SavesManager.OnMatchContinue -= OnMatchContinue;
+        }
+
+        private void StartMatch()
+        {
+            foreach (var image in goalImageContainer.GetComponentsInChildren<GameGoalImage>())
+                Destroy(image.gameObject);
+
+            foreach (var item in itemsContainer.GetComponentsInChildren<GameItem>())
+                Destroy(item.gameObject);
+
             var levelItems = config.Levels[SavesManager.CurrentLevel].LevelItems;
 
             var gameItems = new List<GameItem>();
@@ -51,34 +72,61 @@ namespace Game
             }
 
             _matchLogic = new MatchLogic(gameItems, itemsGoals, config.Levels[SavesManager.CurrentLevel].TimerSeconds);
-            animator.Setup(goalImageReferences, _matchLogic.RemainingTime);
+            animator.Init(goalImageReferences, _matchLogic.RemainingTime);
         }
 
         private async void GameItemClicked(GameItem item)
         {
+            if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null)
+                return;
+
             var (pickedItems, goal, lose, win) = _matchLogic.PickItem(item);
             if (pickedItems != null)
                 item.ItemClicked -= GameItemClicked;
             await animator.PickItem(item, pickedItems, goal);
 
             if (lose)
-                Debug.LogError("Lose");
+                OnMatchLose();
 
             var (mergedItems, remainingItems) = _matchLogic.MergeItems(item);
             if (mergedItems != null)
                 await animator.MergeItems(mergedItems, remainingItems);
 
             if (win)
-                Debug.LogError("Win");
+                OnMatchWin();
+        }
+
+        private void OnMatchWin()
+        {
+            SavesManager.SetMatchResult(true, _matchLogic.RemainingTime);
+            NavigationManager.Open(Scenes.GameWinPopup);
+            _matchLogic = null;
+        }
+
+        private void OnMatchLose()
+        {
+            SavesManager.SetMatchResult(false);
+            NavigationManager.Open(Scenes.GameLosePopup);
+            _matchLogic = null;
         }
 
         private void Update()
         {
-            if (_matchLogic != null)
+            if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null)
+                return;
+            if (_matchLogic.RemainingTime.TotalMilliseconds > 0)
                 animator.UpdateTimer(_matchLogic.RemainingTime, _matchLogic.TotalTime);
+            else if (_matchLogic.RemainingTime.TotalMilliseconds <= 0)
+                OnMatchLose();
         }
 
-        public void Pause() => NavigationManager.Open(Scenes.GamePause);
+        public void Pause()
+        {
+            SavesManager.PauseMatch();
+            NavigationManager.Open(Scenes.GamePause);
+        }
+
+        public void OnMatchContinue(TimeSpan timeSpan) => _matchLogic.OnMatchContinue(timeSpan);
 
         UniTask ISceneController.Open() => animator.Open();
 

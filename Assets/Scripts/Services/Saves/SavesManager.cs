@@ -1,33 +1,12 @@
-using System.Runtime.Serialization.Formatters.Binary;
-using UnityEngine;
-using System.IO;
-using System;
+using System.Collections.Generic;
 using System.Globalization;
-using Configs;
+using System.Linq;
+using System;
 
 namespace Services
 {
-    public class SavesManager : Service
+    public partial class SavesManager : Service
     {
-        [Serializable] private class SavesData
-        {
-            public bool isMusicActive = true;
-            public bool isSoundEffectsActive = true;
-
-            public int currentLevel;
-            public int starsCollected;
-
-            public int coins;
-            public int lives;
-            public string recoverLiveStart;
-        }
-
-        [SerializeField] private GameConfig config;
-        
-        private static GameConfig _config;
-        private static SavesData _savesData;
-        private static string Path => Application.persistentDataPath + "MatchFactory.saves";
-
         public static Action<bool> OnMusicActiveChange;
         public static bool IsMusicActive
         {
@@ -74,50 +53,24 @@ namespace Services
                 _savesData.recoverLiveStart = _savesData.lives < _config.MaxLives
                     ? recoverLiveStart.AddSeconds(consumedSeconds).ToString(CultureInfo.InvariantCulture)
                     : null;
-                
+
                 Save();
-                
+
                 return ((int, int))(_savesData.lives, _savesData.lives < _config.MaxLives ? timeSpan - consumedSeconds : 0);
             }
         }
 
-        public static void LoseLive()
+        public static Dictionary<PowerUps, int> PowerUps => _savesData.powerUps?.ToDictionary(p => p.powerUps, p => p.qty) ?? new();
+
+        public static bool UsePowerUps(PowerUps powerUps)
         {
-            _savesData.lives--;
-            _savesData.recoverLiveStart ??= DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+            var data = _savesData.powerUps.FirstOrDefault(p => p.powerUps == powerUps);
+            if (data == null || data.qty <= 0)
+                return false;
+            data.qty--;
             Save();
-        }
-        
-        private static void Save()
-        {
-            var formatter = new BinaryFormatter();
-            var stream = new FileStream(Path, FileMode.Create);
-            formatter.Serialize(stream, _savesData);
-            stream.Close();
+            return true;
         }
 
-        private static void Load()
-        {
-            if (!File.Exists(Path))
-            {
-                _savesData = new SavesData
-                {
-                    coins = _config.StartingCoins,
-                    lives = _config.MaxLives
-                };
-                return;
-            }
-            
-            var formatter = new BinaryFormatter();
-            var stream = new FileStream(Path, FileMode.Open);
-            _savesData = formatter.Deserialize(stream) as SavesData;
-            stream.Close();
-        }
-
-        internal override void Init()
-        {
-            _config = config;
-            Load();
-        }
     }
 }
