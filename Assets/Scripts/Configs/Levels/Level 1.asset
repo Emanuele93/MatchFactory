@@ -16,13 +16,13 @@ MonoBehaviour:
   levelItems:
   - item: {fileID: 1279554846392533470, guid: d0ddd93953187fd4195f9cea4a7b8a56, type: 3}
     qty: 3
-    goalQty: 3
+    isGoal: 1
   - item: {fileID: 1687316010116733344, guid: 5bef41f8151d12e47b88b8ec00bc0b63, type: 3}
     qty: 9
-    goalQty: 0
+    isGoal: 0
   - item: {fileID: -5023934413605421717, guid: ba93ae1410e341d41be192f9d77df500, type: 3}
     qty: 9
-    goalQty: 0
+    isGoal: 0
   - item: {fileID: 2618334512989667129, guid: 517e976be9ac3ee41a961dd8bf728615, type: 3}
     qty: 9
-    goalQty: 0
+    isGoal: 0

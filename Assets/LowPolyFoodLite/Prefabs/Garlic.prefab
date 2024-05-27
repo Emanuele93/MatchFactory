@@ -128,4 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093a79d997609a947a950c9f2aa92ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: -2035932947, guid: 85703ee0d52ea0d479ea35a4259a0b41, type: 3}
+  id: Garlic
+  image: {fileID: 21300000, guid: f44a5d2f3eef07243b9465e796f9b962, type: 3}
+  itemCollider: {fileID: 7282423689102339559}
+  itemRenderer: {fileID: 5195422319005221706}
+  rigidBody: {fileID: -5401399259474442936}

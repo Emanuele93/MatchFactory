@@ -128,4 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093a79d997609a947a950c9f2aa92ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: -2035932947, guid: 85703ee0d52ea0d479ea35a4259a0b41, type: 3}
+  id: Banana
+  image: {fileID: 21300000, guid: 96c4c21405709da4da99e5e35084e3a7, type: 3}
+  itemCollider: {fileID: 4876087460592226192}
+  itemRenderer: {fileID: 429129613116869983}
+  rigidBody: {fileID: 7436252896297146354}

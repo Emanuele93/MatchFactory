@@ -128,4 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093a79d997609a947a950c9f2aa92ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: -2035932947, guid: 85703ee0d52ea0d479ea35a4259a0b41, type: 3}
+  id: KitchenProps_02
+  image: {fileID: 21300000, guid: 4d79b4abe57786d46a1b3371de73296b, type: 3}
+  itemCollider: {fileID: 3079843261254523963}
+  itemRenderer: {fileID: 5871233828508567359}
+  rigidBody: {fileID: 3469256346054082531}

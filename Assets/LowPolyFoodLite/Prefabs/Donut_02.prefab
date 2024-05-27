@@ -128,4 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093a79d997609a947a950c9f2aa92ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: -2035932947, guid: 85703ee0d52ea0d479ea35a4259a0b41, type: 3}
+  id: Donut_02
+  image: {fileID: 21300000, guid: abf950c9ef194e44eaa066212eaa4e5b, type: 3}
+  itemCollider: {fileID: 9205644745503158460}
+  itemRenderer: {fileID: 2596341051820280992}
+  rigidBody: {fileID: -8624361428009726145}

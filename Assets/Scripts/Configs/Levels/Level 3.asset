@@ -15,20 +15,20 @@ MonoBehaviour:
   timerSeconds: 180
   levelItems:
   - item: {fileID: -1490312504748142563, guid: 7ad882d92260f6d42900c84561064dd3, type: 3}
-    qty: 3
-    goalQty: 3
+    qty: 2
+    isGoal: 1
   - item: {fileID: 7659627092280269885, guid: 71be32ea5846afd419e33241296bc486, type: 3}
-    qty: 3
-    goalQty: 3
+    qty: 2
+    isGoal: 1
   - item: {fileID: -3836222400281910740, guid: 6b5c801f5ca0b3e4aa2780dbe3ba0538, type: 3}
     qty: 6
-    goalQty: 0
+    isGoal: 0
   - item: {fileID: 122398318714696316, guid: bb285724e2c64684b817d021a6bc867d, type: 3}
     qty: 6
-    goalQty: 0
+    isGoal: 0
   - item: {fileID: 8461255965519256203, guid: d8cf39e351e7c82408a1ea1822811ad9, type: 3}
     qty: 6
-    goalQty: 0
+    isGoal: 0
   - item: {fileID: 5962452738115916484, guid: c6f47410b0c7bfa488e17d3d793d6de4, type: 3}
     qty: 6
-    goalQty: 0
+    isGoal: 0

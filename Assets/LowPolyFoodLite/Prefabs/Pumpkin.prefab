@@ -128,4 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093a79d997609a947a950c9f2aa92ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: -2035932947, guid: 85703ee0d52ea0d479ea35a4259a0b41, type: 3}
+  id: Pumpkin
+  image: {fileID: 21300000, guid: 895b2b1ea5eb8154eab6e1779b0ae159, type: 3}
+  itemCollider: {fileID: -5831997292801383939}
+  itemRenderer: {fileID: 6728717918809541099}
+  rigidBody: {fileID: 4968276714681028612}
