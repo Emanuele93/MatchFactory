@@ -27,7 +27,6 @@ namespace Services
         public static void StartNewMatch(PowerUps[] initialPowerUps)
         {
             _lastMatch = new MatchData(initialPowerUps);
-            _savesData.coins += _config.MatchWinCoinsReward;
             _savesData.lives--;
             _savesData.recoverLiveStart ??= DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
             Save();
@@ -37,6 +36,7 @@ namespace Services
         {
             if (win)
             {
+                _savesData.coins += _config.MatchWinCoinsReward;
                 _savesData.currentLevel++;
                 _savesData.lives = Math.Min(_savesData.lives + 1, _config.MaxLives);
                 if (_savesData.lives >= _config.MaxLives)

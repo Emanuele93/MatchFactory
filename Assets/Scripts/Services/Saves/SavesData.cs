@@ -60,6 +60,7 @@ namespace Services
         {
             _savesData = new SavesData
             {
+                currentLevel = 1,
                 isMusicActive = false,
                 coins = _config.StartingCoins,
                 lives = 1000,

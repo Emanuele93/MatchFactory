@@ -8,7 +8,6 @@ namespace Configs
         [SerializeField] string id;
         [SerializeField] private Sprite image;
         [SerializeField] private Collider itemCollider;
-        [SerializeField] private Renderer itemRenderer;
         [SerializeField] private Rigidbody rigidBody;
         [SerializeField] private Vector3 pickedPosition;
         [SerializeField] private Vector3 pickedRotation;
@@ -21,7 +20,6 @@ namespace Configs
         public Sprite Image => image;
         public Rigidbody RigidBody { get => rigidBody; set => rigidBody = value; }
         public Collider Collider => itemCollider;
-        public Renderer Renderer => itemRenderer;
         public Vector3 PickedPosition => pickedPosition;
         public Vector3 PickedRotation => pickedRotation;
         public Vector3 PickedScale => pickedScale;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.Linq;
 using Services;
 using Configs;
 using System;
@@ -37,6 +38,7 @@ namespace Game
         private async void Restart()
         {
             StartMatch();
+            animator.ContinueMatch(_matchLogic.PickedWithBombDates());
             var tasks = new List<UniTask>();
             foreach (var powerUps in SavesManager.LastMatch.InitialPowerUps)
                 tasks.Add(UsePowerUps(powerUps));
@@ -92,6 +94,9 @@ namespace Game
             var (pickedItems, goal, lose, win) = _matchLogic.PickItem(item);
             await animator.PickItem(item, pickedItems, goal);
 
+            if (_matchLogic == null)
+                return;
+
             if (lose)
             {
                 OnMatchLose();
@@ -101,6 +106,9 @@ namespace Game
             var (mergedItems, remainingItems) = _matchLogic.MergeItems(item);
             if (mergedItems != null)
                 await animator.MergeItems(mergedItems, remainingItems);
+
+            if (_matchLogic == null)
+                return;
 
             if (win)
                 OnMatchWin();
@@ -115,6 +123,7 @@ namespace Game
 
         private void OnMatchLose()
         {
+            animator.PauseMatch();
             SavesManager.SetMatchResult(false);
             NavigationManager.Open(Scenes.GameLosePopup);
             _matchLogic = null;
@@ -125,18 +134,28 @@ namespace Game
             if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null)
                 return;
             if (_matchLogic.RemainingTime.TotalMilliseconds > 0)
-                animator.UpdateTimer(_matchLogic.RemainingTime, _matchLogic.TotalTime);
+            {
+                if (!_matchLogic.IsBombExploded())
+                    animator.UpdateTimers(_matchLogic.RemainingTime, _matchLogic.TotalTime);
+                else
+                    OnMatchLose();
+            }
             else if (_matchLogic.RemainingTime.TotalMilliseconds <= 0)
                 OnMatchLose();
         }
 
         public void Pause()
         {
+            animator.PauseMatch();
             SavesManager.PauseMatch();
             NavigationManager.Open(Scenes.GamePause);
         }
 
-        public void OnMatchContinue(TimeSpan timeSpan) => _matchLogic.OnMatchContinue(timeSpan);
+        public void OnMatchContinue(TimeSpan timeSpan)
+        {
+            _matchLogic.OnMatchContinue(timeSpan);
+            animator.ContinueMatch(_matchLogic.PickedWithBombDates());
+        }
 
         async UniTask ISceneController.Open()
         {

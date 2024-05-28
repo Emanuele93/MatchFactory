@@ -23,3 +23,6 @@ MonoBehaviour:
   - item: {fileID: -4135308528678439383, guid: 3193c7f4a5f15774f852cd126f08b72a, type: 3}
     qty: 6
     isGoal: 0
+  - item: {fileID: 7304690631698637630, guid: d3e392c08fa02b84bbe544cc486905b9, type: 3}
+    qty: 3
+    isGoal: 0

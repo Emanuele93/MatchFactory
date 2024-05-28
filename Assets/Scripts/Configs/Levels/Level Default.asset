@@ -92,3 +92,9 @@ MonoBehaviour:
   - item: {fileID: -751979674947587723, guid: c331d4509e2a94446b4dedf64fcae8dd, type: 3}
     qty: 1
     isGoal: 0
+  - item: {fileID: 7304690631698637630, guid: d3e392c08fa02b84bbe544cc486905b9, type: 3}
+    qty: 1
+    isGoal: 0
+  - item: {fileID: -7441835888472804239, guid: cc5de5e674870ca479a40105f80555ad, type: 3}
+    qty: 1
+    isGoal: 0
