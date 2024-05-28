@@ -133,3 +133,6 @@ MonoBehaviour:
   itemCollider: {fileID: -7326711231717553642}
   itemRenderer: {fileID: 4800914359473695622}
   rigidBody: {fileID: -1127876909651673832}
+  pickedPosition: {x: -0.39, y: 0.2532, z: -0.5264}
+  pickedRotation: {x: 84.40003, y: 0, z: 0}
+  pickedScale: {x: 0.75, y: 0.75, z: 0.75}

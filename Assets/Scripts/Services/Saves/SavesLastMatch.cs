@@ -27,12 +27,6 @@ namespace Services
         public static void StartNewMatch(PowerUps[] initialPowerUps)
         {
             _lastMatch = new MatchData(initialPowerUps);
-
-            foreach (var powerUps in initialPowerUps)
-            {
-                var data = _savesData.powerUps.FirstOrDefault(p => p.powerUps == powerUps);
-                data.qty--;
-            }
             _savesData.coins += _config.MatchWinCoinsReward;
             _savesData.lives--;
             _savesData.recoverLiveStart ??= DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);

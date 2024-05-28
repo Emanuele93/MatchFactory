@@ -297,6 +297,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MissileButton
       objectReference: {fileID: 0}
+    - target: {fileID: 2727655063775757830, guid: 32d6cbe1ae32b5a44911c9538a41ac64, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 79ea0b581d0da8042a252f88f822a3fa, type: 3}
     - target: {fileID: 3312715177999075203, guid: 32d6cbe1ae32b5a44911c9538a41ac64, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -416,6 +420,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HourglassButton
       objectReference: {fileID: 0}
+    - target: {fileID: 2727655063775757830, guid: 32d6cbe1ae32b5a44911c9538a41ac64, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2ab2df0f511c73741824fb64e1b98735, type: 3}
     - target: {fileID: 3312715177999075203, guid: 32d6cbe1ae32b5a44911c9538a41ac64, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -22,7 +22,7 @@ namespace Game
 
         private void OnEnable()
         {
-            SavesManager.OnMatchRestart += StartMatch;
+            SavesManager.OnMatchRestart += Restart;
             SavesManager.OnMatchContinue += OnMatchContinue;
             StartMatch();
             animator.Setup();
@@ -30,8 +30,17 @@ namespace Game
 
         void OnDisable()
         {
-            SavesManager.OnMatchRestart -= StartMatch;
+            SavesManager.OnMatchRestart -= Restart;
             SavesManager.OnMatchContinue -= OnMatchContinue;
+        }
+
+        private async void Restart()
+        {
+            StartMatch();
+            var tasks = new List<UniTask>();
+            foreach (var powerUps in SavesManager.LastMatch.InitialPowerUps)
+                tasks.Add(UsePowerUps(powerUps));
+            await UniTask.WhenAll(tasks);
         }
 
         private void StartMatch()
@@ -42,14 +51,14 @@ namespace Game
             foreach (var item in itemsContainer.GetComponentsInChildren<GameItem>())
                 Destroy(item.gameObject);
 
-            var levelItems = config.Levels[SavesManager.CurrentLevel].LevelItems;
+            var level = config.Levels.Length > SavesManager.CurrentLevel ? config.Levels[SavesManager.CurrentLevel] : config.LevelDefault;
 
             var gameItems = new List<GameItem>();
             var goalImageReferences = new Dictionary<string, GameGoalImage>();
             var itemsGoals = new Dictionary<string, int>();
             var rnd = new System.Random();
 
-            foreach (var levelItem in levelItems)
+            foreach (var levelItem in level.LevelItems)
             {
                 GameGoalImage goalImageReference = null;
                 var qty = levelItem.qty * 3;
@@ -71,7 +80,7 @@ namespace Game
                 }
             }
 
-            _matchLogic = new MatchLogic(gameItems, itemsGoals, config.Levels[SavesManager.CurrentLevel].TimerSeconds);
+            _matchLogic = new MatchLogic(gameItems, itemsGoals, level.TimerSeconds);
             animator.Init(goalImageReferences, _matchLogic.RemainingTime);
         }
 
@@ -81,12 +90,13 @@ namespace Game
                 return;
 
             var (pickedItems, goal, lose, win) = _matchLogic.PickItem(item);
-            if (pickedItems != null)
-                item.ItemClicked -= GameItemClicked;
             await animator.PickItem(item, pickedItems, goal);
 
             if (lose)
+            {
                 OnMatchLose();
+                return;
+            }
 
             var (mergedItems, remainingItems) = _matchLogic.MergeItems(item);
             if (mergedItems != null)
@@ -128,7 +138,47 @@ namespace Game
 
         public void OnMatchContinue(TimeSpan timeSpan) => _matchLogic.OnMatchContinue(timeSpan);
 
-        UniTask ISceneController.Open() => animator.Open();
+        async UniTask ISceneController.Open()
+        {
+            await animator.Open();
+            var tasks = new List<UniTask>();
+            foreach (var powerUps in SavesManager.LastMatch.InitialPowerUps)
+                tasks.Add(UsePowerUps(powerUps));
+            await UniTask.WhenAll(tasks);
+        }
+
+        internal async UniTask<int> UsePowerUps(PowerUps powerUps)
+        {
+            if (!SavesManager.PowerUps.ContainsKey(powerUps) || SavesManager.PowerUps[powerUps] <= 0)
+                return 0;
+            if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null || !_matchLogic.CanUsePowerUps(powerUps))
+                return SavesManager.PowerUps[powerUps];
+            if (!SavesManager.UsePowerUps(powerUps))
+                return SavesManager.PowerUps[powerUps];
+
+            switch (powerUps)
+            {
+                case PowerUps.Missile:
+                    await animator.UseMissilePowerUps(_matchLogic.UseMissilePowerUps);
+                    break;
+                case PowerUps.Hourglass:
+                    await animator.UseHourglassPowerUps(_matchLogic.UseHourglassPowerUps);
+                    break;
+                case PowerUps.Fan:
+                    await animator.UseFanPowerUps(_matchLogic.UseFanPowerUps);
+                    break;
+                case PowerUps.Vacuum:
+                    await animator.UseVacuumPowerUps(_matchLogic.UseVacuumPowerUps);
+                    break;
+                case PowerUps.Piston:
+                    await animator.UsePistonPowerUps(_matchLogic.UsePistonPowerUps);
+                    break;
+                case PowerUps.LaserGun:
+                    await animator.UseLaserGunPowerUps(_matchLogic.UseLaserGunPowerUps);
+                    break;
+            }
+            return SavesManager.PowerUps[powerUps];
+        }
 
         UniTask ISceneController.Close() => animator.Close();
     }

@@ -58,17 +58,22 @@ namespace Services
 
         private static void Load()
         {
-            // _savesData = new SavesData
-            // {
-            //     coins = _config.StartingCoins,
-            //     lives = 1000,
-            //     powerUps = new[]
-            //     {
-            //         new SavesDataPuwerUp {powerUps =Services.PowerUps.Missile, qty=10},
-            //         new SavesDataPuwerUp {powerUps =Services.PowerUps.Hourglass, qty=10}
-            //     }
-            // };
-            // Save();
+            _savesData = new SavesData
+            {
+                isMusicActive = false,
+                coins = _config.StartingCoins,
+                lives = 1000,
+                powerUps = new[]
+                {
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Missile, qty=10},
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Hourglass, qty=10},
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Fan, qty=10},
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.LaserGun, qty=10},
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Piston, qty=10},
+                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Vacuum, qty=10}
+                }
+            };
+            Save();
 
             if (!File.Exists(Path))
             {
