@@ -172,6 +172,7 @@ namespace Game
             var tasks = new List<UniTask>();
             foreach (var powerUps in SavesManager.LastMatch.InitialPowerUps)
                 tasks.Add(UsePowerUps(powerUps));
+
             await UniTask.WhenAll(tasks);
         }
 

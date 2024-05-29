@@ -1,6 +1,7 @@
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 using System.Linq;
+using UnityEngine;
 
 namespace Services
 {
@@ -67,7 +68,9 @@ namespace Services
             await loadNewSceneTask;
 
             var newScene = SceneManager.GetSceneByName(scene.ToString());
-            var newSceneController = newScene.GetRootGameObjects()[0].GetComponent<ISceneController>();
+
+            var newSceneController = newScene.GetRootGameObjects().First(x => x.name == newScene.name).GetComponent<ISceneController>();
+
 
             await closePageTask;
             var unloadPageSceneTask = UniTask.CompletedTask;
