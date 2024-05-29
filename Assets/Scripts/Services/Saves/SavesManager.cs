@@ -20,13 +20,6 @@ namespace Services
         }
 
         public static int CurrentLevel => _savesData.currentLevel;
-        public static int StarsCollected => _savesData.starsCollected;
-        public static void CompleteLevel(int newStarsCollected)
-        {
-            _savesData.currentLevel++;
-            _savesData.starsCollected += newStarsCollected;
-            Save();
-        }
 
         public static int Coins
         {

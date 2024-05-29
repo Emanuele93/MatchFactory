@@ -97,6 +97,8 @@ namespace Game
             if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null)
                 return;
 
+            item.ItemClicked -= GameItemClicked;
+            SoundsManager.PlayEffect(SoundEffect.PickObject);
             var (pickedItems, keys, goal, lose, win) = _matchLogic.PickItem(item);
             await animator.PickItem(item, pickedItems, goal, keys);
 
@@ -118,6 +120,7 @@ namespace Game
 
             if (win)
                 OnMatchWin();
+            item.ItemClicked += GameItemClicked;
         }
 
         private void OnMatchWin()

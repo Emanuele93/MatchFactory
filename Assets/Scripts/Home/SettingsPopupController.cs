@@ -6,10 +6,10 @@ namespace Home
 {
     public class SettingsPopupController : MonoBehaviour
     {
-        [Header("Settings")] 
+        [Header("Settings")]
         [SerializeField] private OnOffButton musicButton;
         [SerializeField] private OnOffButton soundsButton;
-        
+
         private void OnEnable()
         {
             musicButton.SetState(SavesManager.IsMusicActive);
@@ -26,7 +26,9 @@ namespace Home
 
         private static void SetMusicActive(bool value) => SavesManager.IsMusicActive = value;
         private static void SetSoundEffectsActive(bool value) => SavesManager.IsSoundEffectsActive = value;
-        
-        public void CloseApp () => Application.Quit();
+
+        public void ResetSaves() => SavesManager.Reset();
+
+        public void CloseApp() => Application.Quit();
     }
 }

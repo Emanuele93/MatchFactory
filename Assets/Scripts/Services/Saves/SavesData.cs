@@ -33,8 +33,6 @@ namespace Services
             public bool isSoundEffectsActive = true;
 
             public int currentLevel;
-            public int starsCollected;
-
             public int coins;
             public int lives;
             public string recoverLiveStart;
@@ -47,6 +45,32 @@ namespace Services
         private static GameConfig _config;
         private static SavesData _savesData;
         private static string Path => Application.persistentDataPath + "MatchFactory.saves";
+        public static Action OnDataReset;
+
+        private static SavesData DefaultData => new()
+        {
+            lives = _config.MaxLives,
+            coins = _config.StartingCoins,
+            powerUps = new[]
+            {
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.Missile, qty=10},
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.Hourglass, qty=10},
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.Fan, qty=5},
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.LaserGun, qty=5},
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.Piston, qty=5},
+                new SavesDataPuwerUp {powerUps =Services.PowerUps.Vacuum, qty=5}
+            }
+        };
+
+        public static void Reset()
+        {
+            var data = DefaultData;
+            data.isMusicActive = _savesData.isMusicActive;
+            data.isSoundEffectsActive = _savesData.isSoundEffectsActive;
+            _savesData = data;
+            Save();
+            OnDataReset?.Invoke();
+        }
 
         private static void Save()
         {
@@ -58,31 +82,9 @@ namespace Services
 
         private static void Load()
         {
-            _savesData = new SavesData
-            {
-                currentLevel = 2,
-                isMusicActive = false,
-                coins = _config.StartingCoins,
-                lives = 1000,
-                powerUps = new[]
-                {
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Missile, qty=10},
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Hourglass, qty=10},
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Fan, qty=10},
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.LaserGun, qty=10},
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Piston, qty=10},
-                    new SavesDataPuwerUp {powerUps =Services.PowerUps.Vacuum, qty=10}
-                }
-            };
-            Save();
-
             if (!File.Exists(Path))
             {
-                _savesData = new SavesData
-                {
-                    coins = _config.StartingCoins,
-                    lives = _config.MaxLives
-                };
+                _savesData = DefaultData;
                 return;
             }
 

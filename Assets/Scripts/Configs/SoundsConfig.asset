@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36f060ead9b3db498ce692534a69a87, type: 3}
   m_Name: SoundsConfig
   m_EditorClassIdentifier: 
-  sounds:
+  soundEffects:
   - soundEffect: 0
     audioClip: {fileID: 8300000, guid: 3f6f0959b8b50d6429d2d667c4f2e4cc, type: 3}
   - soundEffect: 1

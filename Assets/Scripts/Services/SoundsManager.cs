@@ -8,7 +8,7 @@ namespace Services
         [SerializeField] private SoundsConfig config;
         [SerializeField] private AudioSource musicSource;
         [SerializeField] private AudioSource[] effectSources;
-    
+
         private static SoundsConfig _config;
         private static AudioSource _musicSource;
         private static AudioSource[] _effectSources;
@@ -32,10 +32,11 @@ namespace Services
         {
             if (!SavesManager.IsSoundEffectsActive)
                 return;
-            
-            _audioSourceIndex = (_audioSourceIndex + 1) % _effectSources.Length;
-            _effectSources[_audioSourceIndex].clip = _config.GetAudioClip(soundEffect);
-            _effectSources[_audioSourceIndex].Play();
+
+            var index = (_audioSourceIndex + 1) % _effectSources.Length;
+            _audioSourceIndex = index;
+            _effectSources[index].clip = _config.GetAudioClip(soundEffect);
+            _effectSources[index].Play();
         }
 
         private static void OnSoundActiveChange(bool isSoundActive)
@@ -45,7 +46,7 @@ namespace Services
             else
                 _musicSource.Stop();
         }
-        
+
         private void OnEnable()
         {
             SavesManager.OnMusicActiveChange += OnSoundActiveChange;

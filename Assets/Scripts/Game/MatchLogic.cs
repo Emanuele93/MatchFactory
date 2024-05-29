@@ -100,7 +100,7 @@ namespace Game
             }
 
             var win = _goals.Values.Sum() <= 0;
-            var lose = !win && _picked.Count + _keys.Count >= pickableItems && _picked.Count(i => i.ID == item.ID) < mergeableItems;
+            var lose = !win && _picked.Count + _keys.Count >= pickableItems && _picked.All(p => _picked.Count(i => p.ID == i.ID) < mergeableItems);
 
             return (PickedWithBombDates(), keysProgreses, itemGoal, lose, win);
         }
