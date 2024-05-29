@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using System.Linq;
 using Services;
 using Configs;
 using System;
+using TMPro;
 
 namespace Game
 {
@@ -15,14 +15,17 @@ namespace Game
         [SerializeField] private Transform goalImageContainer;
         [SerializeField] private Transform itemsContainer;
         [SerializeField] private Transform pickedItemContainer;
+        [SerializeField] private TextMeshProUGUI level;
 
         [Header("Animator")]
         [SerializeField] private GamePageAnimator animator;
 
         private MatchLogic _matchLogic;
+        private const string keyID = "Key";
 
         private void OnEnable()
         {
+            level.text = $"Level {SavesManager.CurrentLevel + 1}";
             SavesManager.OnMatchRestart += Restart;
             SavesManager.OnMatchContinue += OnMatchContinue;
             StartMatch();
@@ -59,6 +62,7 @@ namespace Game
             var goalImageReferences = new Dictionary<string, GameGoalImage>();
             var itemsGoals = new Dictionary<string, int>();
             var rnd = new System.Random();
+            var keysCount = 0;
 
             foreach (var levelItem in level.LevelItems)
             {
@@ -80,10 +84,12 @@ namespace Game
                     gameItem.ItemClicked += GameItemClicked;
                     gameItems.Add(gameItem);
                 }
+                if (levelItem.item.ID == keyID)
+                    keysCount += levelItem.qty;
             }
 
-            _matchLogic = new MatchLogic(gameItems, itemsGoals, level.TimerSeconds);
-            animator.Init(goalImageReferences, _matchLogic.RemainingTime);
+            _matchLogic = new MatchLogic(gameItems, itemsGoals, level.TimerSeconds, keysCount);
+            animator.Init(goalImageReferences, _matchLogic.RemainingTime, keysCount);
         }
 
         private async void GameItemClicked(GameItem item)
@@ -91,8 +97,8 @@ namespace Game
             if (SavesManager.LastMatch.PauseStart != null || _matchLogic == null)
                 return;
 
-            var (pickedItems, goal, lose, win) = _matchLogic.PickItem(item);
-            await animator.PickItem(item, pickedItems, goal);
+            var (pickedItems, keys, goal, lose, win) = _matchLogic.PickItem(item);
+            await animator.PickItem(item, pickedItems, goal, keys);
 
             if (_matchLogic == null)
                 return;

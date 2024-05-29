@@ -18,12 +18,14 @@ namespace Game
         private const int fanItems = 30;
 
         private const string bombID = "Bomb";
+        private const string keyID = "Key";
         private const int bombTimerSeconds = 5;
 
         private List<GameItem> _items;
         private Dictionary<string, int> _goals;
         private List<GameItem> _picked = new();
         private Dictionary<GameItem, (DateTime, DateTime)> _bombTimers = new();
+        private List<int> _keys;
 
         private DateTime _timerStart;
         private DateTime _timerEnd;
@@ -48,31 +50,47 @@ namespace Game
             return end < DateTime.UtcNow;
         }
 
-        internal MatchLogic(List<GameItem> items, Dictionary<string, int> goals, int TimerSeconds)
+        internal MatchLogic(List<GameItem> items, Dictionary<string, int> goals, int TimerSeconds, int keys)
         {
             _items = items;
             _goals = goals;
+            _keys = new List<int>();
 
             _timerStart = DateTime.UtcNow;
             _timerEnd = DateTime.UtcNow.AddSeconds(TimerSeconds);
+
+            for (var i = 0; i < keys; i++)
+                _keys.Add(mergeableItems);
         }
 
-        internal ((GameItem, DateTime?, DateTime?)[], int, bool, bool) PickItem(GameItem item)
+        internal ((GameItem, DateTime?, DateTime?)[], float[], int, bool, bool) PickItem(GameItem item)
         {
-            if (_picked.Count >= pickableItems)
-                return (null, -1, false, false);
+            if (_picked.Count - _keys.Count >= pickableItems)
+                return (null, null, -1, false, false);
 
             if (item.ID == bombID)
                 _bombTimers[item] = (DateTime.UtcNow, DateTime.UtcNow.AddSeconds(bombTimerSeconds));
 
-            var lastSameItem = _picked.LastOrDefault(x => x.ID == item.ID);
-            var index = _picked.Count;
-            if (lastSameItem != null)
-                index = _picked.IndexOf(lastSameItem) + 1;
+            var keysProgreses = _keys.Select(k => (float)k / mergeableItems).ToArray();
+            if (item.ID == keyID)
+            {
+                _keys[0]--;
+                keysProgreses = _keys.Select(k => (float)k / mergeableItems).ToArray();
+                if (_keys[0] <= 0)
+                    _keys.RemoveAt(0);
+                _items.Remove(item);
+            }
+            else
+            {
+                var lastSameItem = _picked.LastOrDefault(x => x.ID == item.ID);
+                var index = _picked.Count;
+                if (lastSameItem != null)
+                    index = _picked.IndexOf(lastSameItem) + 1;
 
-            _picked.Add(item);
-            for (var i = _picked.Count - 1; i > index; i--)
-                (_picked[i], _picked[i - 1]) = (_picked[i - 1], _picked[i]);
+                _picked.Add(item);
+                for (var i = _picked.Count - 1; i > index; i--)
+                    (_picked[i], _picked[i - 1]) = (_picked[i - 1], _picked[i]);
+            }
 
             var itemGoal = -1;
             if (_goals.ContainsKey(item.ID))
@@ -82,9 +100,9 @@ namespace Game
             }
 
             var win = _goals.Values.Sum() <= 0;
-            var lose = !win && _picked.Count >= pickableItems && _picked.Count(i => i.ID == item.ID) < mergeableItems;
+            var lose = !win && _picked.Count + _keys.Count >= pickableItems && _picked.Count(i => i.ID == item.ID) < mergeableItems;
 
-            return (PickedWithBombDates(), itemGoal, lose, win);
+            return (PickedWithBombDates(), keysProgreses, itemGoal, lose, win);
         }
 
         internal (GameItem[], (GameItem, DateTime?, DateTime?)[]) MergeItems(GameItem item)

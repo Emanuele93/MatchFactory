@@ -1499,6 +1499,8 @@ MonoBehaviour:
   - {fileID: 51610736}
   - {fileID: 1676276414}
   pickedItemProgresBarPrefab: {fileID: 3475105824663844684, guid: 86a7112c2c21ea1439fbbd695e38addb, type: 3}
+  keyPrefab: {fileID: -7441835888472804239, guid: cc5de5e674870ca479a40105f80555ad, type: 3}
+  keyProgressBarMaterial: {fileID: 2100000, guid: 7cd1b811472c7444bab74e41d69d5c23, type: 2}
 --- !u!1 &753962505
 GameObject:
   m_ObjectHideFlags: 0

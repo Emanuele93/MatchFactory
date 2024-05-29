@@ -39,8 +39,10 @@ namespace Game
         [SerializeField] private Transform pickedItemContainer;
         [SerializeField] private Transform[] pickedItemStands;
         [SerializeField] private MeshRenderer pickedItemProgresBarPrefab;
+        [SerializeField] private GameItem keyPrefab;
+        [SerializeField] private Material keyProgressBarMaterial;
 
-        private const string bombID = "Bomb";
+        private const string keyID = "Key";
 
         private Vector3 _topUIPosition;
         private Vector3 _bottomUIPosition;
@@ -49,13 +51,36 @@ namespace Game
         private Dictionary<string, GameGoalImage> _goalImages;
         private MeshRenderer[] _pickedItemProgresBar;
         private GameItem[] _pickedItems;
+        private List<GameItem> _keys = new();
+        private List<MeshRenderer> _keysProgresBar = new();
         private bool _pause;
 
-        internal void Init(Dictionary<string, GameGoalImage> goalImages, TimeSpan time)
+        internal void Init(Dictionary<string, GameGoalImage> goalImages, TimeSpan time, int keys)
         {
             _pickedItems = new GameItem[pickedItemStands.Length];
             _goalImages = goalImages;
             timerText.text = $"{time.Minutes:00}:{time.Seconds:00}";
+
+            foreach (var obj in _keys)
+                Destroy(obj.gameObject);
+            foreach (var obj in _keysProgresBar)
+                Destroy(obj.gameObject);
+            _keys.Clear();
+            _keysProgresBar.Clear();
+            for (int i = 0; i < keys; i++)
+            {
+                var obj = Instantiate(keyPrefab, pickedItemContainer);
+                Destroy(obj.RigidBody);
+                obj.Collider.enabled = false;
+                obj.transform.position = new Vector3(pickedItemStands[pickedItemStands.Length - 1 - i].transform.position.x, obj.PickedPosition.y, obj.PickedPosition.z);
+                obj.transform.eulerAngles = obj.PickedRotation;
+                obj.transform.localScale = obj.PickedScale;
+                _keys.Add(obj);
+                var bar = Instantiate(pickedItemProgresBarPrefab, pickedItemStands[pickedItemStands.Length - 1 - i]);
+                bar.material = keyProgressBarMaterial;
+                bar.gameObject.SetActive(true);
+                _keysProgresBar.Add(bar);
+            }
         }
 
         internal void Setup()
@@ -162,7 +187,7 @@ namespace Game
             await _pickedItemProgresBar[pickIndex].transform.DOScaleY(1, .2f);
         }
 
-        internal async UniTask PickItem(GameItem item, (GameItem, DateTime?, DateTime?)[] pickedItems, int goal)
+        internal async UniTask PickItem(GameItem item, (GameItem, DateTime?, DateTime?)[] pickedItems, int goal, float[] keysProgres)
         {
             if (pickedItems == null)
             {
@@ -179,6 +204,16 @@ namespace Game
                 item.transform.DOScale(item.PickedScale, .4f).ToUniTask(),
                 item.transform.DORotate(item.PickedRotation, .4f).ToUniTask()
             };
+
+            if (item.ID == keyID)
+            {
+                var pos = _keysProgresBar.Count - keysProgres.Length;
+                var bar = _keysProgresBar[_keysProgresBar.Count - 1 - pos];
+                var newPosition = new Vector3(bar.transform.parent.position.x, item.PickedPosition.y, item.PickedPosition.z);
+                movements.Add(item.transform.DOMove(newPosition, .4f).ToUniTask());
+                movements.Add(bar.transform.DOScaleX(keysProgres[0], .4f).ToUniTask());
+            }
+
             var i = 0;
             for (; i < pickedItems.Length; i++)
             {
@@ -198,6 +233,22 @@ namespace Game
             }
 
             await UniTask.WhenAll(movements);
+
+            if (item.ID == keyID)
+            {
+                Destroy(item.gameObject);
+                if (keysProgres[0] == 0)
+                {
+                    var pos = _keysProgresBar.Count - 1 - _keysProgresBar.Count + keysProgres.Length;
+                    await _keys[pos].transform.DOScale(Vector3.zero, .3f);
+                    var k = _keys[pos];
+                    _keys.RemoveAt(pos);
+                    Destroy(k.gameObject);
+                    var p = _keysProgresBar[pos];
+                    _keysProgresBar.RemoveAt(pos);
+                    Destroy(p.gameObject);
+                }
+            }
 
             if (_goalImages.ContainsKey(item.ID))
             {
